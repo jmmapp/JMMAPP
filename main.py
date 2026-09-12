@@ -115,6 +115,27 @@ def callback():
         "mensagem": "Autorização concluída com sucesso."
     })
 
+@app.route("/teste-api")
+def teste_api():
+    access_token = session.get("access_token")
+
+    if not access_token:
+        return jsonify({
+            "status": "erro",
+            "mensagem": "Nenhum access token encontrado. Faça login novamente."
+        }), 401
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    response = requests.get(
+        "https://api.mercadolibre.com/users/me",
+        headers=headers
+    )
+
+    return jsonify(response.json()), response.status_code
+
 @app.route("/notifications", methods=["POST"])
 def notifications():
     data = request.json
