@@ -180,6 +180,37 @@ def produto_teste():
 
     return jsonify(response.json()), response.status_code
 
+@app.route("/pagina-teste")
+def pagina_teste():
+    url = (
+        "https://www.mercadolivre.com.br/"
+        "perfume-jean-paul-gaultier-le-male-eau-de-parfum-intense-75-ml-masculino/"
+        "p/MLB17512827"
+    )
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/152.0.0.0 Safari/537.36"
+        ),
+        "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8"
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=15,
+        allow_redirects=True
+    )
+
+    return jsonify({
+        "status_http": response.status_code,
+        "acesso": response.ok,
+        "tamanho_html": len(response.text),
+        "url_final": response.url
+    })
+
 @app.route("/notifications", methods=["POST"])
 def notifications():
     data = request.json
