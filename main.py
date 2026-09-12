@@ -55,11 +55,23 @@ def home():
 
 @app.route("/perfumes")
 def perfumes():
+    access_token = session.get("access_token")
+
+    if not access_token:
+        return jsonify({
+            "status": "erro",
+            "mensagem": "Nenhum access token encontrado. Faça login novamente."
+        }), 401
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
     url = "https://api.mercadolibre.com/sites/MLB/search?q=perfume"
 
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
 
-    return jsonify(response.json())
+    return jsonify(response.json()), response.status_code
 
 
 @app.route("/callback")
