@@ -241,7 +241,7 @@ def recomendacao_teste():
         )
 
         links = re.findall(
-            r'href=["\']([^"\']*MLB\d+[^"\']*)["\']',
+            r'href=["\']([^"\']*/p/[^"\']*)["\']',
             response.text
         )
 
