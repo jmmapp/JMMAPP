@@ -215,10 +215,11 @@ def pagina_teste():
 
 @app.route("/recomendacao-teste")
 def recomendacao_teste():
-    url_base = (
+    url = (
         "https://www.mercadolivre.com.br/social/"
         "jz20260905175617996/lists/"
         "f524c20d-1e3b-4eb7-881a-61fef471ef9a"
+        "?page=1"
     )
 
     headers = {
@@ -230,34 +231,33 @@ def recomendacao_teste():
         "Accept-Language": "pt-BR,pt;q=0.9"
     }
 
-    diagnostico = []
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=15
+    )
 
-    for pagina in range(1, 5):
-        url = f"{url_base}?page={pagina}"
+    html = response.text
 
-        response = requests.get(
-            url,
-            headers=headers,
-            timeout=15
-        )
+    alvo = "MLB40171509"
 
-        html = response.text
+    posicao = html.find(alvo)
 
-        item_ids = re.findall(
-            r'"item_id"\s*:\s*"(MLB\d+)"',
-            html
-        )
-
-        item_ids = list(dict.fromkeys(item_ids))
-
-        diagnostico.append({
-            "pagina": pagina,
-            "quantidade_item_ids": len(item_ids),
-            "item_ids": item_ids
+    if posicao == -1:
+        return jsonify({
+            "encontrado": False,
+            "mensagem": "MLB40171509 não apareceu no HTML recebido pelo servidor."
         })
 
+    inicio = max(0, posicao - 500)
+    fim = min(len(html), posicao + 500)
+
+    trecho = html[inicio:fim]
+
     return jsonify({
-        "diagnostico": diagnostico
+        "encontrado": True,
+        "posicao": posicao,
+        "trecho": trecho
     })
 
 @app.route("/notifications", methods=["POST"])
