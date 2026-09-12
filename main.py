@@ -65,11 +65,20 @@ def perfumes():
 @app.route("/callback")
 def callback():
     code = request.args.get("code")
+    state = request.args.get("state")
 
     if not code:
         return jsonify({
             "status": "erro",
             "mensagem": "Nenhum código de autorização foi recebido."
+        }), 400
+
+    state_salvo = session.get("state")
+
+    if not state or state != state_salvo:
+        return jsonify({
+            "status": "erro",
+            "mensagem": "State inválido."
         }), 400
 
     code_verifier = session.get("code_verifier")
