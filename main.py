@@ -4,6 +4,7 @@ import secrets
 import hashlib
 import base64
 import os
+import re
 
 app = Flask(__name__)
 
@@ -231,14 +232,19 @@ def recomendacao_teste():
     response = requests.get(
         url,
         headers=headers,
-        timeout=15,
-        allow_redirects=False
+        timeout=15
     )
+
+    html = response.text
+
+    ids_encontrados = re.findall(r"MLB\d+", html)
+
+    ids_unicos = list(dict.fromkeys(ids_encontrados))
 
     return jsonify({
         "status_http": response.status_code,
-        "destino": response.headers.get("Location"),
-        "tamanho_html": len(response.text)
+        "quantidade_ids": len(ids_unicos),
+        "ids": ids_unicos[:30]
     })
 
 @app.route("/notifications", methods=["POST"])
