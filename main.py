@@ -134,7 +134,17 @@ def teste_api():
         headers=headers
     )
 
-    return jsonify(response.json()), response.status_code
+    if response.status_code != 200:
+        return jsonify(response.json()), response.status_code
+
+    usuario = response.json()
+
+    return jsonify({
+        "status": "sucesso",
+        "id": usuario.get("id"),
+        "nickname": usuario.get("nickname"),
+        "site_id": usuario.get("site_id")
+    })
 
 @app.route("/notifications", methods=["POST"])
 def notifications():
