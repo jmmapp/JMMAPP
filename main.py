@@ -102,7 +102,18 @@ def callback():
 
     response = requests.post(url, data=dados)
 
-    return jsonify(response.json()), response.status_code
+    if response.status_code != 200:
+        return jsonify(response.json()), response.status_code
+
+    token_data = response.json()
+
+    session["access_token"] = token_data["access_token"]
+    session["user_id"] = token_data["user_id"]
+
+    return jsonify({
+        "status": "sucesso",
+        "mensagem": "Autorização concluída com sucesso."
+    })
 
 @app.route("/notifications", methods=["POST"])
 def notifications():
