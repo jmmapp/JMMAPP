@@ -243,41 +243,17 @@ def recomendacao_teste():
 
         html = response.text
 
-        links = re.findall(
-            r'href=["\']([^"\']+)["\']',
+        item_ids = re.findall(
+            r'"item_id"\s*:\s*"(MLB\d+)"',
             html
         )
 
-        links_produtos = []
-
-        for link in links:
-            link = html_lib.unescape(link)
-
-            if "/p/MLB" in link:
-                links_produtos.append(link)
-
-        links_produtos = list(dict.fromkeys(links_produtos))
-
-        ids_catalogo = set(
-            re.findall(r"/p/(MLB\d+)", html)
-        )
-
-        ids_anuncio = set(
-            re.findall(r"wid=(MLB\d+)", html)
-        )
-
-        todos_ids = set(
-            re.findall(r"MLB\d{6,}", html)
-        )
+        item_ids = list(dict.fromkeys(item_ids))
 
         diagnostico.append({
             "pagina": pagina,
-            "status": response.status_code,
-            "tamanho_html": len(html),
-            "links_produtos": len(links_produtos),
-            "ids_catalogo": len(ids_catalogo),
-            "ids_anuncio": len(ids_anuncio),
-            "todos_ids_mlb": len(todos_ids)
+            "quantidade_item_ids": len(item_ids),
+            "item_ids": item_ids
         })
 
     return jsonify({
