@@ -211,6 +211,31 @@ def pagina_teste():
         "url_final": response.url
     })
 
+@app.route("/recomendacao-teste")
+def recomendacao_teste():
+    url = "https://meli.la/1FbHxzo"
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/152.0.0.0 Safari/537.36"
+        )
+    }
+
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=15,
+        allow_redirects=False
+    )
+
+    return jsonify({
+        "status_http": response.status_code,
+        "destino": response.headers.get("Location"),
+        "tamanho_resposta": len(response.text)
+    })
+
 @app.route("/notifications", methods=["POST"])
 def notifications():
     data = request.json
