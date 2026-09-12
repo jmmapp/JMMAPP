@@ -158,6 +158,28 @@ def teste_api():
         "site_id": usuario.get("site_id")
     })
 
+@app.route("/produto-teste")
+def produto_teste():
+    access_token = session.get("access_token")
+
+    if not access_token:
+        return jsonify({
+            "status": "erro",
+            "mensagem": "Nenhum access token encontrado. Faça login novamente."
+        }), 401
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    item_id = "MLB2036110657"
+
+    url = f"https://api.mercadolibre.com/items/{item_id}"
+
+    response = requests.get(url, headers=headers)
+
+    return jsonify(response.json()), response.status_code
+
 @app.route("/notifications", methods=["POST"])
 def notifications():
     data = request.json
