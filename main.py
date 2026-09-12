@@ -5,6 +5,7 @@ import hashlib
 import base64
 import os
 import re
+import html as html_lib
 
 app = Flask(__name__)
 
@@ -229,7 +230,7 @@ def recomendacao_teste():
         "Accept-Language": "pt-BR,pt;q=0.9"
     }
 
-    todos_links = []
+    diagnostico = []
 
     for pagina in range(1, 5):
         url = f"{url_base}?page={pagina}"
@@ -240,18 +241,47 @@ def recomendacao_teste():
             timeout=15
         )
 
+        html = response.text
+
         links = re.findall(
-            r'href=["\']([^"\']*/p/[^"\']*)["\']',
-            response.text
+            r'href=["\']([^"\']+)["\']',
+            html
         )
 
-        todos_links.extend(links)
+        links_produtos = []
 
-    links_unicos = list(dict.fromkeys(todos_links))
+        for link in links:
+            link = html_lib.unescape(link)
+
+            if "/p/MLB" in link:
+                links_produtos.append(link)
+
+        links_produtos = list(dict.fromkeys(links_produtos))
+
+        ids_catalogo = set(
+            re.findall(r"/p/(MLB\d+)", html)
+        )
+
+        ids_anuncio = set(
+            re.findall(r"wid=(MLB\d+)", html)
+        )
+
+        todos_ids = set(
+            re.findall(r"MLB\d{6,}", html)
+        )
+
+        diagnostico.append({
+            "pagina": pagina,
+            "status": response.status_code,
+            "tamanho_html": len(html),
+            "links_produtos": len(links_produtos),
+            "ids_catalogo": len(ids_catalogo),
+            "ids_anuncio": len(ids_anuncio),
+            "todos_ids_mlb": len(todos_ids)
+        })
 
     return jsonify({
-        "quantidade_links": len(links_unicos),
-        "links": links_unicos
+        "diagnostico": diagnostico
     })
 
 @app.route("/notifications", methods=["POST"])
