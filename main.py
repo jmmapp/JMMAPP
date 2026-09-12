@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import requests
 
 app = Flask(__name__)
@@ -19,6 +19,23 @@ def perfumes():
     response = requests.get(url)
 
     return jsonify(response.json())
+
+
+@app.route("/callback")
+def callback():
+    code = request.args.get("code")
+
+    if not code:
+        return jsonify({
+            "status": "erro",
+            "mensagem": "Nenhum código de autorização foi recebido."
+        }), 400
+
+    return jsonify({
+        "status": "sucesso",
+        "mensagem": "Código de autorização recebido.",
+        "code": code
+    })
 
 
 if __name__ == "__main__":
