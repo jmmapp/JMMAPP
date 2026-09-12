@@ -37,6 +37,16 @@ def callback():
         "code": code
     })
 
+@app.route("/notifications", methods=["POST"])
+def notifications():
+    data = request.json
+
+    print("Notificação recebida:")
+    print(data)
+
+    return jsonify({
+        "status": "ok"
+    }), 200
 
 if __name__ == "__main__":
     app.run()
