@@ -213,14 +213,19 @@ def pagina_teste():
 
 @app.route("/recomendacao-teste")
 def recomendacao_teste():
-    url = "https://meli.la/1FbHxzo"
+    url = (
+        "https://www.mercadolivre.com.br/social/"
+        "jz20260905175617996/lists/"
+        "f524c20d-1e3b-4eb7-881a-61fef471ef9a"
+    )
 
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/152.0.0.0 Safari/537.36"
-        )
+        ),
+        "Accept-Language": "pt-BR,pt;q=0.9"
     }
 
     response = requests.get(
@@ -233,7 +238,7 @@ def recomendacao_teste():
     return jsonify({
         "status_http": response.status_code,
         "destino": response.headers.get("Location"),
-        "tamanho_resposta": len(response.text)
+        "tamanho_html": len(response.text)
     })
 
 @app.route("/notifications", methods=["POST"])
