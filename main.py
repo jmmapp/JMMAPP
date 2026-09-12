@@ -214,7 +214,7 @@ def pagina_teste():
 
 @app.route("/recomendacao-teste")
 def recomendacao_teste():
-    url = (
+    url_base = (
         "https://www.mercadolivre.com.br/social/"
         "jz20260905175617996/lists/"
         "f524c20d-1e3b-4eb7-881a-61fef471ef9a"
@@ -229,26 +229,30 @@ def recomendacao_teste():
         "Accept-Language": "pt-BR,pt;q=0.9"
     }
 
-    response = requests.get(
-        url,
-        headers=headers,
-        timeout=15
-    )
+    todos_links = []
 
-    html = response.text
+    for pagina in range(1, 5):
+        url = f"{url_base}?page={pagina}"
 
-    links_encontrados = re.findall(
-    r'href=["\']([^"\']*MLB\d+[^"\']*)["\']',
-    html
-)
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=15
+        )
 
-    links_unicos = list(dict.fromkeys(links_encontrados))
+        links = re.findall(
+            r'href=["\']([^"\']*MLB\d+[^"\']*)["\']',
+            response.text
+        )
+
+        todos_links.extend(links)
+
+    links_unicos = list(dict.fromkeys(todos_links))
 
     return jsonify({
-    "status_http": response.status_code,
-    "quantidade_links": len(links_unicos),
-    "links": links_unicos[:30]
-})
+        "quantidade_links": len(links_unicos),
+        "links": links_unicos
+    })
 
 @app.route("/notifications", methods=["POST"])
 def notifications():
