@@ -1,9 +1,25 @@
+from flask import Flask, jsonify
 import requests
 
-url = "https://api.mercadolibre.com/sites/MLB/search?q=perfume"
+app = Flask(__name__)
 
-response = requests.get(url)
 
-print("Status:", response.status_code)
-print("Tamanho da resposta:", len(response.text))
-print(response.json())
+@app.route("/")
+def home():
+    return jsonify({
+        "status": "online",
+        "mensagem": "JMM Promos API está funcionando"
+    })
+
+
+@app.route("/perfumes")
+def perfumes():
+    url = "https://api.mercadolibre.com/sites/MLB/search?q=perfume"
+
+    response = requests.get(url)
+
+    return jsonify(response.json())
+
+
+if __name__ == "__main__":
+    app.run()
