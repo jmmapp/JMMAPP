@@ -237,15 +237,18 @@ def recomendacao_teste():
 
     html = response.text
 
-    ids_encontrados = re.findall(r"MLB\d+", html)
+    links_encontrados = re.findall(
+    r'href=["\']([^"\']*MLB\d+[^"\']*)["\']',
+    html
+)
 
-    ids_unicos = list(dict.fromkeys(ids_encontrados))
+    links_unicos = list(dict.fromkeys(links_encontrados))
 
     return jsonify({
-        "status_http": response.status_code,
-        "quantidade_ids": len(ids_unicos),
-        "ids": ids_unicos[:30]
-    })
+    "status_http": response.status_code,
+    "quantidade_links": len(links_unicos),
+    "links": links_unicos[:30]
+})
 
 @app.route("/notifications", methods=["POST"])
 def notifications():
